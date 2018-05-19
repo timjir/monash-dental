@@ -1,0 +1,13 @@
+New row with INSURER as payer inserted to invoice table, 106.62 added to NTF001
+
+New row with INSURER as payer inserted to invoice table, 35.42 added to BUP001
+
+New row with INSURER as payer inserted to invoice table, 88.43 added to BUP001
+
+Update made to row with (new:) payer as INSURER in invoice table, 75.42 added to BUP001
+Update made to row with (old:) payer as INSURER in invoice table, 35.42 subtracted from BUP001
+
+Row with INSURER as payer deleted from invoice table, 106.62 subtracted from NTF001
+
+New row with INSURER as payer inserted to invoice table, 106.62 added to NTF001
+

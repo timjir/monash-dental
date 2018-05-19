@@ -1,0 +1,24 @@
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+Row updated in INVOICE table, log entry added to payment_audit table.
+
+Row updated in INVOICE table, log entry added to payment_audit table.
+
+Row deleted from INVOICE table, log entry added to payment_audit table.
+
+Row deleted from INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+
+New row inserted into INVOICE table, log entry added to payment_audit table.
+

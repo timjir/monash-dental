@@ -1,0 +1,859 @@
+SQL> DROP SEQUENCE APMT_APP_NUM_SEQ;
+
+Sequence APMT_APP_NUM_SEQ dropped.
+
+SQL> DROP SEQUENCE INVOICE_INVOICE_NUM_SEQ;
+
+Sequence INVOICE_INVOICE_NUM_SEQ dropped.
+
+SQL> DROP SEQUENCE NURSE_NURSE_NUMBER_SEQ;
+
+Sequence NURSE_NURSE_NUMBER_SEQ dropped.
+
+SQL> DROP SEQUENCE PATIENT_PATIENT_NUM_SEQ;
+
+Sequence PATIENT_PATIENT_NUM_SEQ dropped.
+
+SQL> DROP SEQUENCE PAYMENT_AUDIT_ENTRY_NUM_SEQ;
+
+Sequence PAYMENT_AUDIT_ENTRY_NUM_SEQ dropped.
+
+SQL> DROP
+  TABLE APMT CASCADE CONSTRAINTS ;
+
+Table APMT dropped.
+
+SQL> DROP
+  TABLE APP_SERVICE CASCADE CONSTRAINTS ;
+
+Table APP_SERVICE dropped.
+
+SQL> DROP
+  TABLE INSURER CASCADE CONSTRAINTS ;
+
+Table INSURER dropped.
+
+SQL> DROP
+  TABLE INVOICE CASCADE CONSTRAINTS ;
+
+Table INVOICE dropped.
+
+SQL> DROP
+  TABLE NURSE CASCADE CONSTRAINTS ;
+
+Table NURSE dropped.
+
+SQL> DROP
+  TABLE NURSE_SPEC CASCADE CONSTRAINTS ;
+
+Table NURSE_SPEC dropped.
+
+SQL> DROP
+  TABLE PATIENT CASCADE CONSTRAINTS ;
+
+Table PATIENT dropped.
+
+SQL> DROP
+  TABLE PAYMENT_AUDIT CASCADE CONSTRAINTS ;
+
+Table PAYMENT_AUDIT dropped.
+
+SQL> DROP
+  TABLE PROVIDER CASCADE CONSTRAINTS ;
+
+Table PROVIDER dropped.
+
+SQL> DROP
+  TABLE PROVIDER_SERVICE CASCADE CONSTRAINTS ;
+
+Table PROVIDER_SERVICE dropped.
+
+SQL> DROP
+  TABLE PROVIDER_TYPE CASCADE CONSTRAINTS ;
+
+Table PROVIDER_TYPE dropped.
+
+SQL> DROP
+  TABLE SERVICE CASCADE CONSTRAINTS ;
+
+Table SERVICE dropped.
+
+SQL> DROP
+  TABLE SPEC CASCADE CONSTRAINTS ;
+
+Table SPEC dropped.
+
+SQL> CREATE
+  TABLE APMT
+  (
+    APP_NUM       NUMBER (4) NOT NULL ,
+    PATIENT_NUM   NUMBER (4) NOT NULL ,
+    PROVIDER_CODE VARCHAR2 (6) NOT NULL ,
+    NURSE_NUMBER  NUMBER (4) NOT NULL ,
+    APP_DATETIME  DATE NOT NULL ,
+    APP_ROOM      NUMBER (3) NOT NULL ,
+    APP_LEN       VARCHAR2 (10) NOT NULL ,
+    FOLLOW_UP_APP NUMBER (4)
+  ) ;
+
+Table APMT created.
+
+SQL> ALTER TABLE APMT ADD CHECK ( APP_ROOM                         IN (101, 102, 103, 104, 105, 201, 202)) ;
+
+Table APMT altered.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT CHECK_APP_LEN CHECK ( APP_LEN IN ('long',
+'short', 'standard')) ;
+
+Table APMT altered.
+
+SQL> COMMENT ON COLUMN APMT.APP_NUM
+IS
+  'Appointment number. 4 digit number. Primary key for the APPOINTMENT table.'
+  ;
+
+Comment on column apmt.app_num 'APPOINTMENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR THE APPOINTMENT TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.PATIENT_NUM
+IS
+  'Patient number. 4 digit number. Primary key for PATIENT table. Auto increment from 1000.'
+  ;
+
+Comment on column apmt.patient_num 'PATIENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR PATIENT TABLE. AUTO INCREMENT FROM 1000.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.PROVIDER_CODE
+IS
+  '6 character code to uniquely identify the provider, made up of 3 letters followed by 3 numbers.'
+  ;
+
+Comment on column apmt.provider_code '6 CHARACTER CODE TO UNIQUELY IDENTIFY THE PROVIDER, MADE UP OF 3 LETTERS FOLLOWED BY 3 NUMBERS.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.NURSE_NUMBER
+IS
+  'Nurse number. 4 digit number. Primary key for NURSE table.' ;
+
+Comment on column apmt.nurse_number 'NURSE NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR NURSE TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.APP_DATETIME
+IS
+  'Appointment date and time. Cannot be NULL.' ;
+
+Comment on column apmt.app_datetime 'APPOINTMENT DATE AND TIME. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.APP_ROOM
+IS
+  'Room number for the appointment. 3 digit. Cannot be Null. Constrained to rooms at the surgery.'
+  ;
+
+Comment on column apmt.app_room 'ROOM NUMBER FOR THE APPOINTMENT. 3 DIGIT. CANNOT BE NULL. CONSTRAINED TO ROOMS AT THE SURGERY.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.APP_LEN
+IS
+  'Appointment length. 10 character limit. Cannot be NULL. Constrained to short, standard or long.'
+  ;
+
+Comment on column apmt.app_len 'APPOINTMENT LENGTH. 10 CHARACTER LIMIT. CANNOT BE NULL. CONSTRAINED TO SHORT, STANDARD OR LONG.' succeeded.
+
+SQL> COMMENT ON COLUMN APMT.FOLLOW_UP_APP
+IS
+  'Appointment number. 4 digit number. Primary key for the APPOINTMENT table.'
+  ;
+
+Comment on column apmt.follow_up_app 'APPOINTMENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR THE APPOINTMENT TABLE.' succeeded.
+
+SQL> CREATE UNIQUE INDEX APPOINTMENT__IDX ON APMT ( FOLLOW_UP_APP ASC ) ;
+
+Unique index APPOINTMENT__IDX created.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT APPOINTMENT_PK PRIMARY KEY ( APP_NUM ) ;
+
+Table APMT altered.
+
+SQL> CREATE
+  TABLE APP_SERVICE
+  (
+    APP_NUM      NUMBER (4) NOT NULL ,
+    SERVICE_CODE NUMBER (4) NOT NULL ,
+    CHARGED_FEE  NUMBER (7,2) NOT NULL
+  ) ;
+
+Table APP_SERVICE created.
+
+SQL> COMMENT ON COLUMN APP_SERVICE.APP_NUM
+IS
+  'Appointment number. 4 digit number. Primary key for the APPOINTMENT table.'
+  ;
+
+Comment on column app_service.app_num 'APPOINTMENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR THE APPOINTMENT TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN APP_SERVICE.SERVICE_CODE
+IS
+  '4 digit code - code is only made of numbers so numeric value chosen. Primary key for SERVICE table'
+  ;
+
+Comment on column app_service.service_code '4 DIGIT CODE - CODE IS ONLY MADE OF NUMBERS SO NUMERIC VALUE CHOSEN. PRIMARY KEY FOR SERVICE TABLE' succeeded.
+
+SQL> COMMENT ON COLUMN APP_SERVICE.CHARGED_FEE
+IS
+  'Fee charged for the service. 7 digit number with 2 decimal places. Cannot be NULL.'
+  ;
+
+Comment on column app_service.charged_fee 'FEE CHARGED FOR THE SERVICE. 7 DIGIT NUMBER WITH 2 DECIMAL PLACES. CANNOT BE NULL.' succeeded.
+
+SQL> ALTER TABLE APP_SERVICE ADD CONSTRAINT APPOINTMENT_SERVICE_PK PRIMARY KEY (
+SERVICE_CODE, APP_NUM ) ;
+
+Table APP_SERVICE altered.
+
+SQL> CREATE
+  TABLE INSURER
+  (
+    INSURER_CODE    VARCHAR2 (6) NOT NULL ,
+    INSURER_NAME    VARCHAR2 (100.) NOT NULL ,
+    INSURER_ADDRESS VARCHAR2 (150) NOT NULL ,
+    INSURER_PHONE   VARCHAR2 (15) NOT NULL ,
+    INSURER_MTD     NUMBER (9,2) ,
+    INSURER_YTD     NUMBER (9,2)
+  ) ;
+
+Table INSURER created.
+
+SQL> ALTER TABLE INSURER ADD CONSTRAINT CHECK_INSURER_CODE CHECK ( REGEXP_LIKE(
+INSURER_CODE,'[[:alpha:]]{3}[[:digit:]]{3}')) ;
+
+Table INSURER altered.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_CODE
+IS
+  'Insurer code. 5 character code. Primary key for the INSURER table.' ;
+
+Comment on column insurer.insurer_code 'INSURER CODE. 5 CHARACTER CODE. PRIMARY KEY FOR THE INSURER TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_NAME
+IS
+  'Insurer name. 100 character limit. Cannot be NULL.' ;
+
+Comment on column insurer.insurer_name 'INSURER NAME. 100 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_ADDRESS
+IS
+  'Insurer address. 150 character limit. Cannot be NULL.' ;
+
+Comment on column insurer.insurer_address 'INSURER ADDRESS. 150 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_PHONE
+IS
+  'Insurance company phone contact. 15 character limit. Cannot be NULL.' ;
+
+Comment on column insurer.insurer_phone 'INSURANCE COMPANY PHONE CONTACT. 15 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_MTD
+IS
+  'Payments made by the insurance company month to date. 9 digit number with 2 decimal places. Can be NULL.'
+  ;
+
+Comment on column insurer.insurer_mtd 'PAYMENTS MADE BY THE INSURANCE COMPANY MONTH TO DATE. 9 DIGIT NUMBER WITH 2 DECIMAL PLACES. CAN BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN INSURER.INSURER_YTD
+IS
+  'Payments made by the insurance company year to date. 9 digit number with 2 decimal places. Can be NULL.'
+  ;
+
+Comment on column insurer.insurer_ytd 'PAYMENTS MADE BY THE INSURANCE COMPANY YEAR TO DATE. 9 DIGIT NUMBER WITH 2 DECIMAL PLACES. CAN BE NULL.' succeeded.
+
+SQL> ALTER TABLE INSURER ADD CONSTRAINT INSURER_PK PRIMARY KEY ( INSURER_CODE ) ;
+
+Table INSURER altered.
+
+SQL> CREATE
+  TABLE INVOICE
+  (
+    INVOICE_NUM  NUMBER (6) NOT NULL ,
+    APP_NUM      NUMBER (4) NOT NULL ,
+    PAYMENT_FROM VARCHAR2 (10) NOT NULL ,
+    AMOUNT_PAID  NUMBER (7,2) NOT NULL
+  ) ;
+
+Table INVOICE created.
+
+SQL> ALTER TABLE INVOICE ADD CONSTRAINT CHEC_INVOICE_NUMBER CHECK ( INVOICE_NUM
+BETWEEN 10000 AND 999999) ;
+
+Table INVOICE altered.
+
+SQL> ALTER TABLE INVOICE ADD CONSTRAINT CHECK_PAYMENT_FROM CHECK ( PAYMENT_FROM IN (
+'INSURER', 'PATIENT')) ;
+
+Table INVOICE altered.
+
+SQL> COMMENT ON COLUMN INVOICE.INVOICE_NUM
+IS
+  '6 digit invoice number. Primary key for INVOICE table.' ;
+
+Comment on column invoice.invoice_num '6 DIGIT INVOICE NUMBER. PRIMARY KEY FOR INVOICE TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN INVOICE.APP_NUM
+IS
+  'Appointment number. 4 digit number. Primary key for the APPOINTMENT table.'
+  ;
+
+Comment on column invoice.app_num 'APPOINTMENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR THE APPOINTMENT TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN INVOICE.PAYMENT_FROM
+IS
+  'Payment from insurer or patient. Cannot be NULL. Constrained to patient or insurer..'
+  ;
+
+Comment on column invoice.payment_from 'PAYMENT FROM INSURER OR PATIENT. CANNOT BE NULL. CONSTRAINED TO PATIENT OR INSURER..' succeeded.
+
+SQL> COMMENT ON COLUMN INVOICE.AMOUNT_PAID
+IS
+  'Amount paid. 7 digit number. Canno tbe NULL.' ;
+
+Comment on column invoice.amount_paid 'AMOUNT PAID. 7 DIGIT NUMBER. CANNO TBE NULL.' succeeded.
+
+SQL> ALTER TABLE INVOICE ADD CONSTRAINT INVOICE_PK PRIMARY KEY ( INVOICE_NUM ) ;
+
+Table INVOICE altered.
+
+SQL> CREATE
+  TABLE NURSE
+  (
+    NURSE_NUMBER   NUMBER (4) NOT NULL ,
+    NURSE_FNAME    VARCHAR2 (50) NOT NULL ,
+    "NURSE_LNAME." VARCHAR2 (50) NOT NULL ,
+    NURSE_PHONE    VARCHAR2 (15) NOT NULL
+  ) ;
+
+Table NURSE created.
+
+SQL> COMMENT ON COLUMN NURSE.NURSE_NUMBER
+IS
+  'Nurse number. 4 digit number. Primary key for NURSE table.' ;
+
+Comment on column nurse.nurse_number 'NURSE NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR NURSE TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN NURSE.NURSE_FNAME
+IS
+  'Nurse first name. 50 character limit. Cannot be NULL.' ;
+
+Comment on column nurse.nurse_fname 'NURSE FIRST NAME. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN NURSE."NURSE_LNAME."
+IS
+  'Nurse last  name. 50 character limit. Cannot be NULL.' ;
+
+Comment on column nurse."nurse_lname." 'NURSE LAST NAME. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN NURSE.NURSE_PHONE
+IS
+  'Nurse contact phone number. 15 character limit. Cannot be NULL.' ;
+
+Comment on column nurse.nurse_phone 'NURSE CONTACT PHONE NUMBER. 15 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> ALTER TABLE NURSE ADD CONSTRAINT NURSE_PK PRIMARY KEY ( NURSE_NUMBER ) ;
+
+Table NURSE altered.
+
+SQL> CREATE
+  TABLE NURSE_SPEC
+  (
+    NURSE_NUMBER NUMBER (4) NOT NULL ,
+    SPEC_CODE    VARCHAR2 (6) NOT NULL
+  ) ;
+
+Table NURSE_SPEC created.
+
+SQL> COMMENT ON COLUMN NURSE_SPEC.NURSE_NUMBER
+IS
+  'Nurse number. 4 digit number. Primary key for NURSE table.' ;
+
+Comment on column nurse_spec.nurse_number 'NURSE NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR NURSE TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN NURSE_SPEC.SPEC_CODE
+IS
+  'Nurse specialisation code.6 charcter code three letters followed by three numbers ABC123. Primary key for SPECIALISATION table.'
+  ;
+
+Comment on column nurse_spec.spec_code 'NURSE SPECIALISATION CODE.6 CHARCTER CODE THREE LETTERS FOLLOWED BY THREE NUMBERS ABC123. PRIMARY KEY FOR SPECIALISATION TABLE.' succeeded.
+
+SQL> ALTER TABLE NURSE_SPEC ADD CONSTRAINT NURSE_SPECIALISATION_PK PRIMARY KEY (
+NURSE_NUMBER, SPEC_CODE ) ;
+
+Table NURSE_SPEC altered.
+
+SQL> CREATE
+  TABLE PATIENT
+  (
+    PATIENT_NUM  NUMBER (4) NOT NULL ,
+    PAT_FNAME    VARCHAR2 (50) NOT NULL ,
+    PAT_LNAME    VARCHAR2 (50) NOT NULL ,
+    PAT_DOB      DATE NOT NULL ,
+    PAT_ADDRESS  VARCHAR2 (150) NOT NULL ,
+    PAT_PHONE    VARCHAR2 (15) NOT NULL ,
+    INSURER_MTD  NUMBER (9,2) ,
+    INSURER_YTD  NUMBER (9,2) ,
+    INSURER_CODE VARCHAR2 (6)
+  ) ;
+
+Table PATIENT created.
+
+SQL> COMMENT ON COLUMN PATIENT.PATIENT_NUM
+IS
+  'Patient number. 4 digit number. Primary key for PATIENT table. Auto increment from 1000.'
+  ;
+
+Comment on column patient.patient_num 'PATIENT NUMBER. 4 DIGIT NUMBER. PRIMARY KEY FOR PATIENT TABLE. AUTO INCREMENT FROM 1000.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.PAT_FNAME
+IS
+  'Patient first name. 50 Character limit. Cannot be NULL.' ;
+
+Comment on column patient.pat_fname 'PATIENT FIRST NAME. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.PAT_LNAME
+IS
+  'Patient last name. 50 character limit. Cannot be NULL.' ;
+
+Comment on column patient.pat_lname 'PATIENT LAST NAME. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.PAT_DOB
+IS
+  'Patients date of birth. Cannot be NULL.' ;
+
+Comment on column patient.pat_dob 'PATIENTS DATE OF BIRTH. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.PAT_ADDRESS
+IS
+  'Patient address. Canno tbe NULL. 150 character limit.' ;
+
+Comment on column patient.pat_address 'PATIENT ADDRESS. CANNO TBE NULL. 150 CHARACTER LIMIT.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.PAT_PHONE
+IS
+  'Patients contact phone number. 15 character limit. Cannot be NULL.' ;
+
+Comment on column patient.pat_phone 'PATIENTS CONTACT PHONE NUMBER. 15 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.INSURER_MTD
+IS
+  'Insurance payment month to date for the patient. 9 digit number, two decimal places. Can be NULL.'
+  ;
+
+Comment on column patient.insurer_mtd 'INSURANCE PAYMENT MONTH TO DATE FOR THE PATIENT. 9 DIGIT NUMBER, TWO DECIMAL PLACES. CAN BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.INSURER_YTD
+IS
+  'Insurance payments year to date for the patient. 9 digit number with 2 decimal places. Can be NULL.'
+  ;
+
+Comment on column patient.insurer_ytd 'INSURANCE PAYMENTS YEAR TO DATE FOR THE PATIENT. 9 DIGIT NUMBER WITH 2 DECIMAL PLACES. CAN BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PATIENT.INSURER_CODE
+IS
+  'Insurer code. 5 character code. Primary key for the INSURER table.' ;
+
+Comment on column patient.insurer_code 'INSURER CODE. 5 CHARACTER CODE. PRIMARY KEY FOR THE INSURER TABLE.' succeeded.
+
+SQL> ALTER TABLE PATIENT ADD CONSTRAINT PATIENT_PK PRIMARY KEY ( PATIENT_NUM ) ;
+
+Table PATIENT altered.
+
+SQL> CREATE
+  TABLE PAYMENT_AUDIT
+  (
+    ENTRY_NUM    NUMBER (9) NOT NULL ,
+    PAT_NUM      NUMBER (6) NOT NULL ,
+    APP_NUM      NUMBER (4) NOT NULL ,
+    "USER"       VARCHAR2 (20) NOT NULL ,
+    LOG_DATETIME DATE NOT NULL ,
+    PAYMENT_FROM VARCHAR2 (10) NOT NULL ,
+    ACTION       VARCHAR2 (10) NOT NULL
+  ) ;
+
+Table PAYMENT_AUDIT created.
+
+SQL> ALTER TABLE PAYMENT_AUDIT ADD CHECK ( ACTION IN ('DELETE', 'INSERT', 'UPDATE'));
+
+Table PAYMENT_AUDIT altered.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.ENTRY_NUM
+IS
+  'Audit entry number. 9 digit number. Primary key for AUDIT table.' ;
+
+Comment on column payment_audit.entry_num 'AUDIT ENTRY NUMBER. 9 DIGIT NUMBER. PRIMARY KEY FOR AUDIT TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.PAT_NUM
+IS
+  'Patient number. 5 dgit number. Cannot be NULL.' ;
+
+Comment on column payment_audit.pat_num 'PATIENT NUMBER. 5 DGIT NUMBER. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.APP_NUM
+IS
+  'Appointment number. 5 digit number. Cannot be NULL.' ;
+
+Comment on column payment_audit.app_num 'APPOINTMENT NUMBER. 5 DIGIT NUMBER. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT."USER"
+IS
+  'Logged in Oracle user at the time payment was made. Cannot be NULL.' ;
+
+Comment on column payment_audit."user" 'LOGGED IN ORACLE USER AT THE TIME PAYMENT WAS MADE. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.LOG_DATETIME
+IS
+  'Date and time for the log entry. Cannot be NULL.' ;
+
+Comment on column payment_audit.log_datetime 'DATE AND TIME FOR THE LOG ENTRY. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.PAYMENT_FROM
+IS
+  'Origin of payent, either from PATIENT or INSURER. Cannot be NULL.' ;
+
+Comment on column payment_audit.payment_from 'ORIGIN OF PAYENT, EITHER FROM PATIENT OR INSURER. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PAYMENT_AUDIT.ACTION
+IS
+  'Record if the change was an insert, update or delete.' ;
+
+Comment on column payment_audit.action 'RECORD IF THE CHANGE WAS AN INSERT, UPDATE OR DELETE.' succeeded.
+
+SQL> ALTER TABLE PAYMENT_AUDIT ADD CONSTRAINT AUDIT_PK PRIMARY KEY ( ENTRY_NUM ) ;
+
+Table PAYMENT_AUDIT altered.
+
+SQL> CREATE
+  TABLE PROVIDER
+  (
+    PROVIDER_CODE    VARCHAR2 (6) NOT NULL ,
+    PROVIDER_FNAME   VARCHAR2 (50) NOT NULL ,
+    PROVIDER_LNAME   VARCHAR2 (50) NOT NULL ,
+    ROOM_NUM         NUMBER (3) ,
+    CHARGE_MTD       NUMBER (7,2) ,
+    CHARGE_YTD       NUMBER (9,2) ,
+    PROVIDER_TYPE_ID NUMBER (5) NOT NULL
+  ) ;
+
+Table PROVIDER created.
+
+SQL> ALTER TABLE PROVIDER ADD CONSTRAINT CHECK_PROVIDER_CODE CHECK ( REGEXP_LIKE(
+PROVIDER_CODE,'[[:alpha:]]{3}[[:digit:]]{3}')) ;
+
+Table PROVIDER altered.
+
+SQL> ALTER TABLE PROVIDER ADD CONSTRAINT CHECK_ROOM_NUMBER CHECK ( ROOM_NUM IN (101,
+102, 103, 104, 201, 202)) ;
+
+Table PROVIDER altered.
+
+SQL> COMMENT ON COLUMN PROVIDER.PROVIDER_CODE
+IS
+  '6 character code to uniquely identify the provider, made up of 3 letters followed by 3 numbers.'
+  ;
+
+Comment on column provider.provider_code '6 CHARACTER CODE TO UNIQUELY IDENTIFY THE PROVIDER, MADE UP OF 3 LETTERS FOLLOWED BY 3 NUMBERS.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.PROVIDER_FNAME
+IS
+  'Providers first name (50 character limit). Cannot be null.' ;
+
+Comment on column provider.provider_fname 'PROVIDERS FIRST NAME 50 CHARACTER LIMIT). CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.PROVIDER_LNAME
+IS
+  'Providers last name, 50 character limit. Cannot be null.' ;
+
+Comment on column provider.provider_lname 'PROVIDERS LAST NAME, 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.ROOM_NUM
+IS
+  '3 digit number for the normal room of the provider. Is not mandantory. Constrained to rooms at surgery.'
+  ;
+
+Comment on column provider.room_num '3 DIGIT NUMBER FOR THE NORMAL ROOM OF THE PROVIDER. IS NOT MANDANTORY. CONSTRAINED TO ROOMS AT SURGERY.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.CHARGE_MTD
+IS
+  '7 digit number (2 decimals). Total charges of the provider for the current month. '
+  ;
+
+Comment on column provider.charge_mtd '7 DIGIT NUMBER 2 DECIMALS). TOTAL CHARGES OF THE PROVIDER FOR THE CURRENT MONTH. ' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.CHARGE_YTD
+IS
+  'Total provider charges for the year to date. 9 digit number (2 decimal places).'
+  ;
+
+Comment on column provider.charge_ytd 'TOTAL PROVIDER CHARGES FOR THE YEAR TO DATE. 9 DIGIT NUMBER 2 DECIMAL PLACES).' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER.PROVIDER_TYPE_ID
+IS
+  'Provider type code. 2 digit number. Primary key for PROVIDER TYPE.' ;
+
+Comment on column provider.provider_type_id 'PROVIDER TYPE CODE. 2 DIGIT NUMBER. PRIMARY KEY FOR PROVIDER TYPE.' succeeded.
+
+SQL> ALTER TABLE PROVIDER ADD CONSTRAINT PROVIDER_PK PRIMARY KEY ( PROVIDER_CODE ) ;
+
+Table PROVIDER altered.
+
+SQL> CREATE
+  TABLE PROVIDER_SERVICE
+  (
+    PROVIDER_CODE VARCHAR2 (6) NOT NULL ,
+    SERVICE_CODE  NUMBER (4) NOT NULL ,
+    SERVICE_FEE   NUMBER (7,2)
+  ) ;
+
+Table PROVIDER_SERVICE created.
+
+SQL> COMMENT ON COLUMN PROVIDER_SERVICE.PROVIDER_CODE
+IS
+  '6 character code to uniquely identify the provider, made up of 3 letters followed by 3 numbers.'
+  ;
+
+Comment on column provider_service.provider_code '6 CHARACTER CODE TO UNIQUELY IDENTIFY THE PROVIDER, MADE UP OF 3 LETTERS FOLLOWED BY 3 NUMBERS.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER_SERVICE.SERVICE_CODE
+IS
+  '4 digit code - code is only made of numbers so numeric value chosen. Primary key for SERVICE table'
+  ;
+
+Comment on column provider_service.service_code '4 DIGIT CODE - CODE IS ONLY MADE OF NUMBERS SO NUMERIC VALUE CHOSEN. PRIMARY KEY FOR SERVICE TABLE' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER_SERVICE.SERVICE_FEE
+IS
+  'Fee specific for the service provider combination. 7 digit number with 2 decimal places. Can be NULL.'
+  ;
+
+Comment on column provider_service.service_fee 'FEE SPECIFIC FOR THE SERVICE PROVIDER COMBINATION. 7 DIGIT NUMBER WITH 2 DECIMAL PLACES. CAN BE NULL.' succeeded.
+
+SQL> ALTER TABLE PROVIDER_SERVICE ADD CONSTRAINT PROVIDER_SERVICE_PK PRIMARY KEY (
+SERVICE_CODE, PROVIDER_CODE ) ;
+
+Table PROVIDER_SERVICE altered.
+
+SQL> CREATE
+  TABLE PROVIDER_TYPE
+  (
+    PROVIDER_TYPE_ID   NUMBER (5) NOT NULL ,
+    PROVIDER_TYPE_NAME VARCHAR2 (50) NOT NULL
+  ) ;
+
+Table PROVIDER_TYPE created.
+
+SQL> COMMENT ON COLUMN PROVIDER_TYPE.PROVIDER_TYPE_ID
+IS
+  'Provider type code. 2 digit number. Primary key for PROVIDER TYPE.' ;
+
+Comment on column provider_type.provider_type_id 'PROVIDER TYPE CODE. 2 DIGIT NUMBER. PRIMARY KEY FOR PROVIDER TYPE.' succeeded.
+
+SQL> COMMENT ON COLUMN PROVIDER_TYPE.PROVIDER_TYPE_NAME
+IS
+  'Provider type name. 50 character limite. Cannot be NULL.' ;
+
+Comment on column provider_type.provider_type_name 'PROVIDER TYPE NAME. 50 CHARACTER LIMITE. CANNOT BE NULL.' succeeded.
+
+SQL> ALTER TABLE PROVIDER_TYPE ADD CONSTRAINT PROVIDER_TYPE_PK PRIMARY KEY (
+PROVIDER_TYPE_ID ) ;
+
+Table PROVIDER_TYPE altered.
+
+SQL> CREATE
+  TABLE SERVICE
+  (
+    SERVICE_CODE NUMBER (4) NOT NULL ,
+    SERVICE_DESC VARCHAR2 (50) NOT NULL ,
+    STD_FEE      NUMBER (7,2) NOT NULL
+  ) ;
+
+Table SERVICE created.
+
+SQL> ALTER TABLE SERVICE ADD CONSTRAINT CHECK_SERVICE_CODE CHECK ( SERVICE_CODE
+BETWEEN 1000 AND 9999) ;
+
+Table SERVICE altered.
+
+SQL> COMMENT ON COLUMN SERVICE.SERVICE_CODE
+IS
+  '4 digit code - code is only made of numbers so numeric value chosen. Primary key for SERVICE table'
+  ;
+
+Comment on column service.service_code '4 DIGIT CODE - CODE IS ONLY MADE OF NUMBERS SO NUMERIC VALUE CHOSEN. PRIMARY KEY FOR SERVICE TABLE' succeeded.
+
+SQL> COMMENT ON COLUMN SERVICE.SERVICE_DESC
+IS
+  'Description of the service. 50 character limit. Cannot be NULL.' ;
+
+Comment on column service.service_desc 'DESCRIPTION OF THE SERVICE. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> COMMENT ON COLUMN SERVICE.STD_FEE
+IS
+  'Standard fee charged for the service. 7 digit number with 2 decimal places. Cannot be NULL.'
+  ;
+
+Comment on column service.std_fee 'STANDARD FEE CHARGED FOR THE SERVICE. 7 DIGIT NUMBER WITH 2 DECIMAL PLACES. CANNOT BE NULL.' succeeded.
+
+SQL> ALTER TABLE SERVICE ADD CONSTRAINT SERVICE_PK PRIMARY KEY ( SERVICE_CODE ) ;
+
+Table SERVICE altered.
+
+SQL> CREATE
+  TABLE SPEC
+  (
+    SPEC_CODE VARCHAR2 (6) NOT NULL ,
+    SPEC_DESC VARCHAR2 (50) NOT NULL
+  ) ;
+
+Table SPEC created.
+
+SQL> ALTER TABLE SPEC ADD CONSTRAINT CHECK_SPEC_CODE CHECK ( REGEXP_LIKE(SPEC_CODE,
+'[[:alpha:]]{3}[[:digit:]]{3}')) ;
+
+Table SPEC altered.
+
+SQL> COMMENT ON COLUMN SPEC.SPEC_CODE
+IS
+  'Nurse specialisation code.6 charcter code three letters followed by three numbers ABC123. Primary key for SPECIALISATION table.'
+  ;
+
+Comment on column spec.spec_code 'NURSE SPECIALISATION CODE.6 CHARCTER CODE THREE LETTERS FOLLOWED BY THREE NUMBERS ABC123. PRIMARY KEY FOR SPECIALISATION TABLE.' succeeded.
+
+SQL> COMMENT ON COLUMN SPEC.SPEC_DESC
+IS
+  'Specialisation description. 50 character limit. Cannot be NULL.' ;
+
+Comment on column spec.spec_desc 'SPECIALISATION DESCRIPTION. 50 CHARACTER LIMIT. CANNOT BE NULL.' succeeded.
+
+SQL> ALTER TABLE SPEC ADD CONSTRAINT SPECIALISATION_PK PRIMARY KEY ( SPEC_CODE ) ;
+
+Table SPEC altered.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT RELATION_13 FOREIGN KEY ( FOLLOW_UP_APP )
+REFERENCES APMT ( APP_NUM ) ;
+
+Table APMT altered.
+
+SQL> ALTER TABLE APP_SERVICE ADD CONSTRAINT APMT_APP_SERVICE FOREIGN KEY ( APP_NUM )
+REFERENCES APMT ( APP_NUM ) ;
+
+Table APP_SERVICE altered.
+
+SQL> ALTER TABLE INVOICE ADD CONSTRAINT APPOINTMENT_INVOICE FOREIGN KEY ( APP_NUM )
+REFERENCES APMT ( APP_NUM ) ;
+
+Table INVOICE altered.
+
+SQL> ALTER TABLE PATIENT ADD CONSTRAINT INSURER_PATIENT FOREIGN KEY ( INSURER_CODE )
+REFERENCES INSURER ( INSURER_CODE ) ;
+
+Table PATIENT altered.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT NURSE_APPOINTMENT FOREIGN KEY ( NURSE_NUMBER )
+REFERENCES NURSE ( NURSE_NUMBER ) ;
+
+Table APMT altered.
+
+SQL> ALTER TABLE NURSE_SPEC ADD CONSTRAINT NURSE_NURSE_SPECIALISATION FOREIGN KEY (
+NURSE_NUMBER ) REFERENCES NURSE ( NURSE_NUMBER ) ;
+
+Table NURSE_SPEC altered.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT PATIENT_APPOINTMENT FOREIGN KEY ( PATIENT_NUM )
+REFERENCES PATIENT ( PATIENT_NUM ) ;
+
+Table APMT altered.
+
+SQL> ALTER TABLE PROVIDER_SERVICE ADD CONSTRAINT PROVDER_PROVIDER_SERVICE FOREIGN
+KEY ( PROVIDER_CODE ) REFERENCES PROVIDER ( PROVIDER_CODE ) ;
+
+Table PROVIDER_SERVICE altered.
+
+SQL> ALTER TABLE APMT ADD CONSTRAINT PROVIDER_APP FOREIGN KEY ( PROVIDER_CODE )
+REFERENCES PROVIDER ( PROVIDER_CODE ) ;
+
+Table APMT altered.
+
+SQL> ALTER TABLE PROVIDER ADD CONSTRAINT PROVIDER_PROVIDER_TYPE FOREIGN KEY (
+PROVIDER_TYPE_ID ) REFERENCES PROVIDER_TYPE ( PROVIDER_TYPE_ID ) ;
+
+Table PROVIDER altered.
+
+SQL> ALTER TABLE APP_SERVICE ADD CONSTRAINT SERVICE_APP_SERVICE FOREIGN KEY (
+SERVICE_CODE ) REFERENCES SERVICE ( SERVICE_CODE ) ;
+
+Table APP_SERVICE altered.
+
+SQL> ALTER TABLE PROVIDER_SERVICE ADD CONSTRAINT SERVICE_PROVIDER_SERVICE FOREIGN
+KEY ( SERVICE_CODE ) REFERENCES SERVICE ( SERVICE_CODE ) ;
+
+Table PROVIDER_SERVICE altered.
+
+SQL> ALTER TABLE NURSE_SPEC ADD CONSTRAINT SPEC_NURSE_SPEC FOREIGN KEY ( SPEC_CODE )
+REFERENCES SPEC ( SPEC_CODE ) ;
+
+Table NURSE_SPEC altered.
+
+SQL> CREATE SEQUENCE APMT_APP_NUM_SEQ START WITH 1000 NOCACHE ORDER ;
+
+Sequence APMT_APP_NUM_SEQ created.
+
+SQL> CREATE SEQUENCE INVOICE_INVOICE_NUM_SEQ START WITH 100000 NOCACHE ORDER ;
+
+Sequence INVOICE_INVOICE_NUM_SEQ created.
+
+SQL> CREATE SEQUENCE NURSE_NURSE_NUMBER_SEQ START WITH 1000 NOCACHE ORDER ;
+
+Sequence NURSE_NURSE_NUMBER_SEQ created.
+
+SQL> CREATE SEQUENCE PATIENT_PATIENT_NUM_SEQ START WITH 1000 NOCACHE ORDER ;
+
+Sequence PATIENT_PATIENT_NUM_SEQ created.
+
+SQL> CREATE SEQUENCE PAYMENT_AUDIT_ENTRY_NUM_SEQ START WITH 100000000 NOCACHE ORDER
+  ;
+
+Sequence PAYMENT_AUDIT_ENTRY_NUM_SEQ created.
+
+SQL> -- Oracle SQL Developer Data Modeler Summary Report: 
+SQL> -- 
+SQL> -- CREATE TABLE                            13
+SQL> -- CREATE INDEX                             1
+SQL> -- ALTER TABLE                             36
+SQL> -- CREATE VIEW                              0
+SQL> -- ALTER VIEW                               0
+SQL> -- CREATE PACKAGE                           0
+SQL> -- CREATE PACKAGE BODY                      0
+SQL> -- CREATE PROCEDURE                         0
+SQL> -- CREATE FUNCTION                          0
+SQL> -- CREATE TRIGGER                           0
+SQL> -- ALTER TRIGGER                            0
+SQL> -- CREATE COLLECTION TYPE                   0
+SQL> -- CREATE STRUCTURED TYPE                   0
+SQL> -- CREATE STRUCTURED TYPE BODY              0
+SQL> -- CREATE CLUSTER                           0
+SQL> -- CREATE CONTEXT                           0
+SQL> -- CREATE DATABASE                          0
+SQL> -- CREATE DIMENSION                         0
+SQL> -- CREATE DIRECTORY                         0
+SQL> -- CREATE DISK GROUP                        0
+SQL> -- CREATE ROLE                              0
+SQL> -- CREATE ROLLBACK SEGMENT                  0
+SQL> -- CREATE SEQUENCE                          5
+SQL> -- CREATE MATERIALIZED VIEW                 0
+SQL> -- CREATE SYNONYM                           0
+SQL> -- CREATE TABLESPACE                        0
+SQL> -- CREATE USER                              0
+SQL> -- 
+SQL> -- DROP TABLESPACE                          0
+SQL> -- DROP DATABASE                            0
+SQL> -- 
+SQL> -- REDACTION POLICY                         0
+SQL> -- 
+SQL> -- ORDS DROP SCHEMA                         0
+SQL> -- ORDS ENABLE SCHEMA                       0
+SQL> -- ORDS ENABLE OBJECT                       0
+SQL> -- 
+SQL> -- ERRORS                                   0
+SQL> -- WARNINGS                                 0
+SQL> spool off
